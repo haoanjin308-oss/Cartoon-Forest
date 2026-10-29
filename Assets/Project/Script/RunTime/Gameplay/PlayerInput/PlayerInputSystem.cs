@@ -31,5 +31,9 @@ namespace Project.Script.RunTime.Gameplay.PlayerInput
                 return moveDir;
             }
         }
+        public Vector2 Look => playerInputMap.Player.Look.ReadValue<Vector2>();
+
+        public bool Sprint => playerInputMap.Player.Sprint.IsPressed();
+        public bool Crouch => playerInputMap.Player.Crouch.IsPressed();
     }
 }
