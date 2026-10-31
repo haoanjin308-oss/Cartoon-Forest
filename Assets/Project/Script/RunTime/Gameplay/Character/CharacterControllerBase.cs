@@ -2,6 +2,8 @@ using System;
 using Animancer;
 using Project.Script.RunTime.Data.Configs.CharacterConfig;
 using Project.Script.RunTime.Data.Enums;
+using Project.Script.RunTime.Utils;
+using Project.Script.RunTime.Utils.Pojo;
 using QFramework;
 using UnityEngine;
 
@@ -9,7 +11,7 @@ namespace Project.Script.RunTime.Gameplay.Character
 {
     public class CharacterControllerBase : MonoBehaviour
     {
-        [SerializeField] public float speed = 5f;
+        [SerializeField] public float speed = 2.5f;
         [SerializeField] public bool isRootMovement = false;
         [HideInInspector]public FSM<CharacterStateEnum> fsm;
         protected CharacterController characterController;
@@ -19,6 +21,21 @@ namespace Project.Script.RunTime.Gameplay.Character
         [SerializeField, Range(0f, 1f)]
         private float lookWeight = 1f;
         public CharacterConfigBase characterConfig;
+        public CharacterReusableDataBase reusableData;
+        
+        
+        [Header("地面检测")] [Tooltip("检测球距离")] public float groundDetectedOffset = -0.06f;
+        [Tooltip("检测球大小")] public float groundRadius = 0.2f;
+        [Tooltip("检测的图层")] public LayerMask groundMask;
+        
+        public ValueBox<float> gravity = new ValueBox<float>(-12);
+        private ValueBox<float> _verticalSpeed = new ValueBox<float>();
+        private Vector3 _verticalVelocity;
+        [Tooltip("下坠最高速度和上升最高速度")] public ValueBox<Vector2> velocityLimit = new ValueBox<Vector2>(new Vector2(-20, 60));
+        public ValueBox<bool> isGrounded =  new ValueBox<bool>();
+        
+        public ValueBox<bool> isUpper =  new ValueBox<bool>();
+        public bool isOnGravity;
         // [HideInInspector]
         protected virtual void Awake()
         {
@@ -40,6 +57,9 @@ namespace Project.Script.RunTime.Gameplay.Character
 
         protected virtual void Update()
         {
+            fsm.Update();
+            CheckOnGround();
+            CharacterGravity();
         }
         
         protected virtual void OnAnimatorMove()
@@ -88,5 +108,45 @@ namespace Project.Script.RunTime.Gameplay.Character
             transform.rotation = Quaternion.Euler(0f, yaw, 0f) * transform.rotation;
         }
         
+        private bool CheckOnGround()
+        {
+            Vector3 detectedOrigin = transform.position - groundDetectedOffset * Vector3.up;
+            var hit = Physics.CheckSphere(detectedOrigin, groundRadius, groundMask, QueryTriggerInteraction.Ignore);
+            isGrounded.Value = hit && _verticalSpeed.Value < 0;
+            return isGrounded.Value;
+        }
+        private void CharacterGravity()
+        {
+            if (!isOnGravity || isRootMovement)
+            {
+                _verticalVelocity = Vector3.zero;
+                return;
+            }
+
+            if (isGrounded.Value)
+            {
+                _verticalSpeed.Value = -2;
+            }
+            else
+            {
+                _verticalSpeed.Value += Time.deltaTime * gravity.Value;
+                _verticalSpeed.Value = Mathf.Clamp(_verticalSpeed.Value, velocityLimit.Value.x, velocityLimit.Value.y);
+            }
+
+            _verticalVelocity = new Vector3(0, _verticalSpeed.Value, 0);
+            if (characterController.enabled)
+                characterController.Move(_verticalVelocity * Time.deltaTime);
+        }
+        
+        public float ChangeVerticalSpeed(float verticalSpeed)
+        {
+            return this._verticalSpeed.Value = verticalSpeed;
+        }
+        
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = CheckOnGround() ? Color.green : Color.red;
+            Gizmos.DrawWireSphere(transform.position - groundDetectedOffset * Vector3.up, groundRadius);
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace Project.Script.RunTime.Data.Enums
     {
         Idle,
         Move,
-        Sprint,
+        Jump,
+        Fall,
     }
 }

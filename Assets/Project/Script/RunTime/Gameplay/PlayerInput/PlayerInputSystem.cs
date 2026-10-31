@@ -33,7 +33,7 @@ namespace Project.Script.RunTime.Gameplay.PlayerInput
         }
         public Vector2 Look => playerInputMap.Player.Look.ReadValue<Vector2>();
 
-        public bool Sprint => playerInputMap.Player.Sprint.IsPressed();
-        public bool Crouch => playerInputMap.Player.Crouch.IsPressed();
+        public bool IsSprint => playerInputMap.Player.Sprint.IsPressed();
+        public bool IsCrouch => playerInputMap.Player.Crouch.IsPressed();
     }
 }

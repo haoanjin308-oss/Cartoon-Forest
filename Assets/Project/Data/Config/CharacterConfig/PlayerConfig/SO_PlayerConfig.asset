@@ -15,3 +15,12 @@ MonoBehaviour:
   <PlayerAnimationData>k__BackingField:
     <PlayerIdleData>k__BackingField:
       <Idle>k__BackingField: {fileID: 11400000, guid: 08ca6b3f2e6834ffb8503d16ee64484b, type: 2}
+    <PlayerMoveData>k__BackingField:
+      <Move>k__BackingField: {fileID: 11400000, guid: 08ca6b3f2e6834ffb8503d16ee64484b, type: 2}
+    <PlayerJumpData>k__BackingField:
+      <Jump>k__BackingField: {fileID: 11400000, guid: 08ca6b3f2e6834ffb8503d16ee64484b, type: 2}
+    <PlayerFallData>k__BackingField:
+      <Fall>k__BackingField: {fileID: 11400000, guid: 08ca6b3f2e6834ffb8503d16ee64484b, type: 2}
+  <PlayerParameterData>k__BackingField:
+    <SpeedValueParameter>k__BackingField: {fileID: 11400000, guid: b3ebe443cd2cd4e70a5fa72d9194fd7b, type: 2}
+    <CrouchValueParameter>k__BackingField: {fileID: 11400000, guid: 2f71b9a6c116c4254b8d4e3f88b511a9, type: 2}
